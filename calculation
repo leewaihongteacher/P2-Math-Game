@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌳 森林數學大搜查</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient-1: #1a4d2e;
+            --bg-gradient-2: #2d6a4f;
+            --bg-gradient-3: #40916c;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1b4332;
+            --text-secondary: #2d6a4f;
+            --gold: #ffd700;
+            --gold-dark: #b8860b;
+            --success: #52b788;
+            --error: #e76f51;
+            --shadow: rgba(0, 0, 0, 0.2);
+        }
+
+        .dark {
+            --bg-gradient-1: #0d1b0f;
+            --bg-gradient-2: #1a3d23;
+            --bg-gradient-3: #264d32;
+            --card-bg: rgba(30, 50, 35, 0.95);
+            --text-primary: #d8f3dc;
+            --text-secondary: #95d5b2;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px var(--shadow);
+            animation: floatIn 0.8s ease-out;
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .welcome-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.3);
+        }
+
+        .welcome-animals {
+            font-size: 3.5rem;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #52b788 0%, #40916c 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(82, 183, 136, 0.4);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .start-btn:hover, .start-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(82, 183, 136, 0.5);
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: floatIn 0.6s ease-out;
+        }
+
+        .game-screen.active {
+            display: flex;
+        }
+
+        /* Score Board */
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 15px;
+        }
+
+        .score-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 12px 20px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 8px 25px var(--shadow);
+        }
+
+        .score-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-primary);
+        }
+
+        .score-value.gold {
+            color: var(--gold-dark);
+            text-shadow: 1px 1px 0 var(--gold);
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 25px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 15px 40px var(--shadow);
+        }
+
+        .question-header {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(82, 183, 136, 0.15) 0%, rgba(64, 145, 108, 0.1) 100%);
+            border-radius: 15px;
+        }
+
+        /* Forest Grid */
+        .forest-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 25px;
+            box-shadow: 0 15px 40px var(--shadow);
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #2d6a4f 0%, #1b4332 100%);
+            box-shadow: inset 0 -4px 10px rgba(0,0,0,0.2), 0 4px 8px var(--shadow);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .grid-cell.tree {
+            cursor: default;
+        }
+
+        .grid-cell.animal {
+            cursor: pointer;
+            background: linear-gradient(145deg, #74c69d 0%, #52b788 100%);
+            position: relative;
+        }
+
+        .grid-cell.animal:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(82, 183, 136, 0.5);
+        }
+
+        .grid-cell.animal:active {
+            transform: scale(0.95);
+        }
+
+        .animal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .animal-emoji {
+            font-size: 1.8rem;
+        }
+
+        .animal-number {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: #1b4332;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 8px;
+            border-radius: 8px;
+            margin-top: 2px;
+        }
+
+        /* Name Input Screen */
+        .name-screen {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px var(--shadow);
+            animation: floatIn 0.8s ease-out;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .name-screen.active {
+            display: block;
+        }
+
+        .name-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .name-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .name-input-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: 600;
+            border: 3px solid var(--success);
+            border-radius: 20px;
+            background: rgba(82, 183, 136, 0.1);
+            color: var(--text-primary);
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .name-input:focus {
+            background: rgba(82, 183, 136, 0.2);
+            box-shadow: 0 0 20px rgba(82, 183, 136, 0.3);
+        }
+
+        .name-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .name-error {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .name-error.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .confirm-btn {
+            background: linear-gradient(135deg, #52b788 0%, #40916c 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(82, 183, 136, 0.4);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .confirm-btn:hover, .confirm-btn:active {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(82, 183, 136, 0.5);
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Difficulty Selection */
+        .difficulty-screen {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px var(--shadow);
+            animation: floatIn 0.8s ease-out;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .difficulty-screen.active {
+            display: block;
+        }
+
+        .difficulty-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+        }
+
+        .difficulty-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .difficulty-btn {
+            background: linear-gradient(135deg, rgba(82, 183, 136, 0.2) 0%, rgba(64, 145, 108, 0.15) 100%);
+            border: 3px solid var(--success);
+            color: var(--text-primary);
+            padding: 20px 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .difficulty-btn:hover, .difficulty-btn:active {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #52b788 0%, #40916c 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(82, 183, 136, 0.4);
+        }
+
+        .difficulty-icon {
+            font-size: 2rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .difficulty-info {
+            flex: 1;
+        }
+
+        .difficulty-name {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .difficulty-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            background: transparent;
+            border: 2px solid var(--text-secondary);
+            color: var(--text-secondary);
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover, .back-btn:active {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .difficulty-badge {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 8px 15px;
+            margin-bottom: 15px;
+            display: inline-block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border: 2px solid var(--success);
+        }
+
+        /* Timer */
+        .timer-container {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .timer-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #52b788 0%, #40916c 100%);
+            border-radius: 10px;
+            width: 100%;
+            transition: width 0.1s linear, background 0.3s ease;
+        }
+
+        .timer-bar.warning {
+            background: linear-gradient(90deg, #f9c74f 0%, #f3722c 100%);
+        }
+
+        .timer-bar.danger {
+            background: linear-gradient(90deg, #e76f51 0%, #d62828 100%);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .timer-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .timer-seconds {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .timer-seconds.warning {
+            color: #f3722c;
+        }
+
+        .timer-seconds.danger {
+            color: #d62828;
+        }
+
+        .coin-preview {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Feedback Overlay */
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .feedback-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .feedback-card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .feedback-card.success {
+            border: 4px solid var(--success);
+        }
+
+        .feedback-card.error {
+            border: 4px solid var(--error);
+        }
+
+        .feedback-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .feedback-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .feedback-card.success .feedback-title {
+            color: var(--success);
+        }
+
+        .feedback-card.error .feedback-title {
+            color: var(--error);
+        }
+
+        .feedback-message {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .coins-earned {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold-dark);
+            margin-bottom: 20px;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #52b788 0%, #40916c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn:hover, .next-btn:active {
+            transform: scale(1.05);
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            top: -20px;
+            animation: confettiFall 3s linear forwards;
+            z-index: 1001;
+            pointer-events: none;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Game Over */
+        .game-over {
+            display: none;
+            text-align: center;
+        }
+
+        .game-over.active {
+            display: block;
+        }
+
+        .trophy {
+            font-size: 5rem;
+            animation: bounce 2s infinite;
+        }
+
+        .final-score {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin: 20px 0;
+        }
+
+        .final-score span {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--gold-dark);
+        }
+
+        /* Leaderboard */
+        .leaderboard-section {
+            width: 100%;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(82, 183, 136, 0.3);
+        }
+
+        .leaderboard-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .leaderboard-loading {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            padding: 20px;
+        }
+
+        .leaderboard-loading .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(82, 183, 136, 0.3);
+            border-top-color: var(--success);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, rgba(82, 183, 136, 0.12) 0%, rgba(64, 145, 108, 0.08) 100%);
+            border-radius: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(5px);
+            background: linear-gradient(135deg, rgba(82, 183, 136, 0.2) 0%, rgba(64, 145, 108, 0.15) 100%);
+        }
+
+        .leaderboard-item.current-player {
+            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(184, 134, 11, 0.1) 100%);
+        }
+
+        .leaderboard-rank {
+            font-size: 1.4rem;
+            font-weight: 900;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .leaderboard-rank.gold { color: #ffd700; }
+        .leaderboard-rank.silver { color: #c0c0c0; }
+        .leaderboard-rank.bronze { color: #cd7f32; }
+
+        .leaderboard-info {
+            flex: 1;
+            text-align: left;
+            margin-left: 10px;
+        }
+
+        .leaderboard-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-difficulty {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .leaderboard-stats {
+            text-align: right;
+        }
+
+        .leaderboard-coins {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold-dark);
+        }
+
+        .leaderboard-correct {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-empty {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .leaderboard-note {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* Floating leaves decoration */
+        .leaf {
+            position: fixed;
+            font-size: 2rem;
+            opacity: 0.3;
+            animation: floatLeaf 15s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes floatLeaf {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+            .question-text {
+                font-size: 1.8rem;
+            }
+            .grid-cell {
+                font-size: 1.8rem;
+            }
+            .animal-emoji {
+                font-size: 1.5rem;
+            }
+            .animal-number {
+                font-size: 0.85rem;
+            }
+            .forest-grid {
+                gap: 8px;
+                padding: 15px;
+            }
+            .difficulty-btn {
+                padding: 15px 20px;
+            }
+            .difficulty-icon {
+                font-size: 1.6rem;
+                min-width: 40px;
+            }
+            .difficulty-name {
+                font-size: 1.05rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating leaves decoration -->
+    <div class="leaf" style="left: 10%; animation-delay: 0s;">🍃</div>
+    <div class="leaf" style="left: 30%; animation-delay: 3s;">🌿</div>
+    <div class="leaf" style="left: 50%; animation-delay: 6s;">🍂</div>
+    <div class="leaf" style="left: 70%; animation-delay: 9s;">🍃</div>
+    <div class="leaf" style="left: 90%; animation-delay: 12s;">🌿</div>
+
+    <div class="game-container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1 class="welcome-title">🌳 森林數學大搜查 🌳</h1>
+            <div class="welcome-animals">🦁 🐼 🦊 🐸</div>
+            <p class="welcome-text">
+                哇！森林裡的小動物們躲起來了！🙈<br><br>
+                每隻小動物都拿著一個數字，<br>
+                請幫我找出拿著<strong>正確答案</strong>的那隻，<br>
+                然後<strong>點擊牠</strong>吧！✨
+            </p>
+            <button class="start-btn" id="startBtn">🎮 開始冒險！</button>
+
+            <!-- Leaderboard Preview on Welcome Screen -->
+            <div class="leaderboard-section" id="welcomeLeaderboard">
+                <h3 class="leaderboard-title">🏅 今日排行榜</h3>
+                <div id="welcomeLeaderboardContent">
+                    <div class="leaderboard-empty">還沒有人上榜，成為今日第一名吧！🎉</div>
+                </div>
+                <p class="leaderboard-note">📌 排行榜每日零時重置</p>
+            </div>
+        </div>
+
+        <!-- Name Input Screen -->
+        <div class="name-screen" id="nameScreen">
+            <div class="welcome-animals">🦊</div>
+            <h2 class="name-title">請輸入你的名字</h2>
+            <p class="name-subtitle">讓森林裡的動物們認識你吧！</p>
+            <div class="name-input-wrapper">
+                <input type="text" class="name-input" id="playerNameInput" placeholder="你的名字..." maxlength="12" autocomplete="off">
+                <div class="name-error" id="nameError">請輸入名字才能開始冒險哦！</div>
+            </div>
+            <button class="confirm-btn" id="confirmNameBtn">✨ 確認名字</button>
+            <button class="back-btn" id="backToWelcomeFromName">⬅ 返回</button>
+        </div>
+
+        <!-- Difficulty Selection Screen -->
+        <div class="difficulty-screen" id="difficultyScreen">
+            <h2 class="difficulty-title">🎯 選擇難度</h2>
+            <div class="difficulty-options">
+                <button class="difficulty-btn" data-difficulty="addSub">
+                    <span class="difficulty-icon">➕➖</span>
+                    <div class="difficulty-info">
+                        <div class="difficulty-name">100以內加減</div>
+                        <div class="difficulty-desc">適合練習基礎加減法</div>
+                    </div>
+                </button>
+                <button class="difficulty-btn" data-difficulty="multiply2to9">
+                    <span class="difficulty-icon">✖️</span>
+                    <div class="difficulty-info">
+                        <div class="difficulty-name">2~9乘法</div>
+                        <div class="difficulty-desc">九九乘法表基礎</div>
+                    </div>
+                </button>
+                <button class="difficulty-btn" data-difficulty="multiply0to10">
+                    <span class="difficulty-icon">🔢</span>
+                    <div class="difficulty-info">
+                        <div class="difficulty-name">0~10乘法</div>
+                        <div class="difficulty-desc">包含0和10的進階乘法</div>
+                    </div>
+                </button>
+                <button class="difficulty-btn" data-difficulty="all">
+                    <span class="difficulty-icon">🏆</span>
+                    <div class="difficulty-info">
+                        <div class="difficulty-name">全題目挑戰</div>
+                        <div class="difficulty-desc">加減乘混合，終極挑戰！</div>
+                    </div>
+                </button>
+            </div>
+            <button class="back-btn" id="backToWelcome">⬅ 返回</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <!-- Difficulty Badge -->
+            <div class="difficulty-badge" id="difficultyBadge">全題目挑戰</div>
+
+            <!-- Score Board -->
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">🎯 題目</div>
+                    <div class="score-value" id="roundDisplay">1 / 10</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">⭐ 答對</div>
+                    <div class="score-value" id="correctDisplay">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">💰 金幣</div>
+                    <div class="score-value gold" id="coinsDisplay">0</div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="question-card">
+                <div class="question-header">🔍 尋找目標</div>
+                <div class="question-text" id="questionText">3 × 4 = ?</div>
+
+                <!-- Timer -->
+                <div class="timer-container">
+                    <div class="timer-bar-bg">
+                        <div class="timer-bar" id="timerBar"></div>
+                    </div>
+                    <div class="timer-text">
+                        <span>⏱️ <span class="timer-seconds" id="timerSeconds">20.0</span> 秒</span>
+                        <span class="coin-preview">💰 預估金幣: <span id="coinPreview">100</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forest Grid -->
+            <div class="forest-grid" id="forestGrid">
+                <!-- Grid cells will be generated by JS -->
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div class="welcome-screen game-over" id="gameOverScreen">
+            <div class="trophy">🏆</div>
+            <h1 class="welcome-title">太厲害了！</h1>
+            <p class="final-score">
+                <span id="playerNameDisplay"></span> 答對了 <span id="finalCorrect">0</span> 題！<br>
+                總共獲得 <span id="finalCoins">0</span> 金幣！💰
+            </p>
+
+            <!-- Leaderboard Section -->
+            <div class="leaderboard-section">
+                <h3 class="leaderboard-title">🏅 今日排行榜</h3>
+                <div id="leaderboardContent">
+                    <div class="leaderboard-loading">
+                        <span class="spinner"></span>載入中...
+                    </div>
+                </div>
+                <p class="leaderboard-note">📌 排行榜每日零時重置</p>
+            </div>
+
+            <button class="start-btn" id="restartBtn" style="margin-top: 20px;">🔄 再玩一次！</button>
+        </div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-card" id="feedbackCard">
+            <div class="feedback-emoji" id="feedbackEmoji">🎉</div>
+            <div class="feedback-title" id="feedbackTitle">答對了！</div>
+            <div class="feedback-message" id="feedbackMessage"></div>
+            <div class="coins-earned" id="coinsEarned"></div>
+            <button class="next-btn" id="nextBtn">繼續 ➜</button>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Game State
+        const gameState = {
+            currentRound: 0,
+            totalRounds: 10,
+            correctAnswers: 0,
+            coins: 0,
+            currentAnswer: 0,
+            currentAnimal: '',
+            difficulty: 'all',
+            timeRemaining: 20,
+            timerInterval: null,
+            maxTime: 20,
+            maxCoins: 100,
+            minCoins: 10,
+            playerName: '',
+            sessionId: Math.random().toString(36).substring(2, 15)
+        };
+
+        // Leaderboard data (shared via external JSON storage)
+        let leaderboardData = [];
+        let isLoadingLeaderboard = false;
+
+        // ============================================
+        // 📊 排行榜設定 - 使用 JSONBin.io 免費服務
+        // ============================================
+        // 如需創建自己的排行榜：
+        // 1. 前往 https://jsonbin.io/ 免費註冊
+        // 2. 創建新的 Bin，初始內容為 {}
+        // 3. 設定 Bin 為 Public（公開）
+        // 4. 將下方的 JSONBIN_BIN_ID 替換為你的 Bin ID
+        // ============================================
+        const JSONBIN_BIN_ID = '683d8f608a456b7966a29e8a';
+        const JSONBIN_API_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+
+        // Get today's date string for leaderboard key
+        function getTodayKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        // Show loading state
+        function showLeaderboardLoading() {
+            const contents = ['leaderboardContent', 'welcomeLeaderboardContent'];
+            contents.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = '<div class="leaderboard-loading"><span class="spinner"></span>載入排行榜中...</div>';
+                }
+            });
+        }
+
+        // Fetch leaderboard from JSONBin
+        async function fetchLeaderboard() {
+            if (isLoadingLeaderboard) return;
+
+            isLoadingLeaderboard = true;
+            showLeaderboardLoading();
+
+            try {
+                const response = await fetch(JSONBIN_API_URL + '/latest', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const stored = data.record || {};
+                    const todayKey = getTodayKey();
+
+                    // Get today's leaderboard
+                    leaderboardData = stored[todayKey] || [];
+
+                    // Clean up old dates (older than today)
+                    // This happens on next save
+                }
+            } catch (e) {
+                console.log('Fetch error (CSP may need approval):', e.message);
+                // Show helpful message
+                showCSPMessage();
+            }
+
+            isLoadingLeaderboard = false;
+            renderLeaderboard(false);
+        }
+
+        // Save score to JSONBin
+        async function saveScoreToServer(entry) {
+            const todayKey = getTodayKey();
+
+            // Add to local data first
+            leaderboardData.push(entry);
+            leaderboardData.sort((a, b) => {
+                if (b.coins !== a.coins) return b.coins - a.coins;
+                return b.correct - a.correct;
+            });
+            leaderboardData = leaderboardData.slice(0, 50);
+
+            // Render immediately with local data
+            renderLeaderboard(true);
+
+            try {
+                // Fetch current data first
+                const getResponse = await fetch(JSONBIN_API_URL + '/latest', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                let stored = {};
+                if (getResponse.ok) {
+                    const data = await getResponse.json();
+                    stored = data.record || {};
+                }
+
+                // Clean up old dates (keep only today)
+                const cleanedData = {};
+                cleanedData[todayKey] = stored[todayKey] || [];
+
+                // Add new entry
+                cleanedData[todayKey].push(entry);
+
+                // Sort and limit
+                cleanedData[todayKey].sort((a, b) => {
+                    if (b.coins !== a.coins) return b.coins - a.coins;
+                    return b.correct - a.correct;
+                });
+                cleanedData[todayKey] = cleanedData[todayKey].slice(0, 50);
+
+                // Save back to JSONBin
+                await fetch(JSONBIN_API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(cleanedData)
+                });
+
+                // Update local data
+                leaderboardData = cleanedData[todayKey];
+                renderLeaderboard(true);
+
+            } catch (e) {
+                console.log('Save error:', e.message);
+                // Local data already rendered, so game continues
+            }
+        }
+
+        // Show CSP approval message
+        function showCSPMessage() {
+            const contents = ['leaderboardContent', 'welcomeLeaderboardContent'];
+            contents.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && leaderboardData.length === 0) {
+                    el.innerHTML = `
+                        <div class="leaderboard-empty">
+                            📡 首次使用需要允許連線<br>
+                            <small style="opacity:0.7">請點擊上方的「允許」按鈕</small>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // Initialize leaderboard on page load
+        setTimeout(() => {
+            fetchLeaderboard();
+        }, 300);
+
+        // Animals for answers
+        const animals = ['🦁', '🐼', '🦊', '🐸', '🐰', '🐨', '🦝', '🐯', '🐮', '🦄', '🐻', '🦒'];
+
+        // Problem generators by difficulty
+        const problemGeneratorsByDifficulty = {
+            // 100以內加減
+            addSub: [
+                // Addition (0-50 + 0-50, sum <= 100)
+                () => {
+                    const a = Math.floor(Math.random() * 51);
+                    const maxB = Math.min(50, 100 - a);
+                    const b = Math.floor(Math.random() * (maxB + 1));
+                    return { question: `${a} + ${b}`, answer: a + b };
+                },
+                // Addition (two-digit + single-digit)
+                () => {
+                    const a = Math.floor(Math.random() * 50) + 20;
+                    const maxB = Math.min(30, 100 - a);
+                    const b = Math.floor(Math.random() * maxB) + 1;
+                    return { question: `${a} + ${b}`, answer: a + b };
+                },
+                // Subtraction (result >= 0)
+                () => {
+                    const a = Math.floor(Math.random() * 80) + 20;
+                    const b = Math.floor(Math.random() * a) + 1;
+                    return { question: `${a} − ${b}`, answer: a - b };
+                },
+                // Subtraction (larger numbers)
+                () => {
+                    const a = Math.floor(Math.random() * 50) + 50;
+                    const b = Math.floor(Math.random() * 40) + 10;
+                    return { question: `${a} − ${b}`, answer: a - b };
+                }
+            ],
+            // 2-9乘法
+            multiply2to9: [
+                () => {
+                    const a = Math.floor(Math.random() * 8) + 2; // 2-9
+                    const b = Math.floor(Math.random() * 8) + 2; // 2-9
+                    return { question: `${a} × ${b}`, answer: a * b };
+                },
+                () => {
+                    const a = Math.floor(Math.random() * 8) + 2; // 2-9
+                    const b = Math.floor(Math.random() * 9) + 1; // 1-9
+                    return { question: `${a} × ${b}`, answer: a * b };
+                }
+            ],
+            // 0-10乘法
+            multiply0to10: [
+                () => {
+                    const a = Math.floor(Math.random() * 11); // 0-10
+                    const b = Math.floor(Math.random() * 11); // 0-10
+                    return { question: `${a} × ${b}`, answer: a * b };
+                },
+                () => {
+                    const a = Math.floor(Math.random() * 11); // 0-10
+                    const b = Math.floor(Math.random() * 10) + 1; // 1-10
+                    return { question: `${a} × ${b}`, answer: a * b };
+                }
+            ],
+            // 全題目挑戰
+            all: [
+                // Addition
+                () => {
+                    const a = Math.floor(Math.random() * 51);
+                    const maxB = Math.min(50, 100 - a);
+                    const b = Math.floor(Math.random() * (maxB + 1));
+                    return { question: `${a} + ${b}`, answer: a + b };
+                },
+                // Subtraction
+                () => {
+                    const a = Math.floor(Math.random() * 80) + 20;
+                    const b = Math.floor(Math.random() * a) + 1;
+                    return { question: `${a} − ${b}`, answer: a - b };
+                },
+                // Multiplication (0-10)
+                () => {
+                    const a = Math.floor(Math.random() * 11);
+                    const b = Math.floor(Math.random() * 11);
+                    return { question: `${a} × ${b}`, answer: a * b };
+                }
+            ]
+        };
+
+        // Generate wrong answers (now 3 wrong answers for 4 choices)
+        function generateWrongAnswers(correctAnswer) {
+            const wrongAnswers = new Set();
+            while (wrongAnswers.size < 3) {
+                let offset = Math.floor(Math.random() * 15) + 1;
+                if (Math.random() > 0.5) offset = -offset;
+                let wrong = correctAnswer + offset;
+                if (wrong >= 0 && wrong !== correctAnswer && !wrongAnswers.has(wrong)) {
+                    wrongAnswers.add(wrong);
+                }
+            }
+            return Array.from(wrongAnswers);
+        }
+
+        // Shuffle array
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Calculate coins based on remaining time (linear)
+        function calculateCoins() {
+            const ratio = gameState.timeRemaining / gameState.maxTime;
+            return Math.round(gameState.minCoins + (gameState.maxCoins - gameState.minCoins) * ratio);
+        }
+
+        // Start timer
+        function startTimer() {
+            gameState.timeRemaining = gameState.maxTime;
+            updateTimerDisplay();
+
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeRemaining -= 0.1;
+
+                if (gameState.timeRemaining <= 0) {
+                    gameState.timeRemaining = 0;
+                    clearInterval(gameState.timerInterval);
+                    handleTimeout();
+                }
+
+                updateTimerDisplay();
+            }, 100);
+        }
+
+        // Stop timer
+        function stopTimer() {
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const timerBar = document.getElementById('timerBar');
+            const timerSeconds = document.getElementById('timerSeconds');
+            const coinPreview = document.getElementById('coinPreview');
+
+            const percentage = (gameState.timeRemaining / gameState.maxTime) * 100;
+            timerBar.style.width = percentage + '%';
+            timerSeconds.textContent = gameState.timeRemaining.toFixed(1);
+            coinPreview.textContent = calculateCoins();
+
+            // Update color based on time
+            timerBar.classList.remove('warning', 'danger');
+            timerSeconds.classList.remove('warning', 'danger');
+
+            if (gameState.timeRemaining <= 5) {
+                timerBar.classList.add('danger');
+                timerSeconds.classList.add('danger');
+            } else if (gameState.timeRemaining <= 10) {
+                timerBar.classList.add('warning');
+                timerSeconds.classList.add('warning');
+            }
+        }
+
+        // Handle timeout
+        function handleTimeout() {
+            const overlay = document.getElementById('feedbackOverlay');
+            const card = document.getElementById('feedbackCard');
+            const emoji = document.getElementById('feedbackEmoji');
+            const title = document.getElementById('feedbackTitle');
+            const message = document.getElementById('feedbackMessage');
+            const coinsDiv = document.getElementById('coinsEarned');
+
+            card.className = 'feedback-card error';
+            emoji.textContent = '⏰';
+            title.textContent = '時間到！';
+            message.innerHTML = `時間用完了！<br>正確答案是 <strong>${gameState.currentAnswer}</strong> 哦！<br>( ${gameState.currentAnimal}${gameState.currentAnswer} ) 才是正確的小動物！`;
+            coinsDiv.textContent = '';
+
+            updateScoreBoard();
+            overlay.classList.add('active');
+        }
+
+        // Generate forest grid
+        function generateGrid() {
+            // Stop any existing timer
+            stopTimer();
+
+            const generators = problemGeneratorsByDifficulty[gameState.difficulty];
+            const generator = generators[Math.floor(Math.random() * generators.length)];
+            const problem = generator();
+
+            gameState.currentAnswer = problem.answer;
+
+            // Update question display
+            document.getElementById('questionText').textContent = `${problem.question} = ?`;
+
+            // Start the timer
+            startTimer();
+
+            // Get random animals for this round (4 animals now)
+            const roundAnimals = shuffleArray(animals).slice(0, 4);
+            gameState.currentAnimal = roundAnimals[0];
+
+            // Create options: 1 correct + 3 wrong
+            const wrongAnswers = generateWrongAnswers(problem.answer);
+            const options = [
+                { answer: problem.answer, animal: roundAnimals[0], isCorrect: true },
+                { answer: wrongAnswers[0], animal: roundAnimals[1], isCorrect: false },
+                { answer: wrongAnswers[1], animal: roundAnimals[2], isCorrect: false },
+                { answer: wrongAnswers[2], animal: roundAnimals[3], isCorrect: false }
+            ];
+
+            // Create 16 cells (4 with animals, 12 with trees)
+            const cells = [];
+            for (let i = 0; i < 16; i++) {
+                cells.push({ type: 'tree' });
+            }
+
+            // Random positions for the 4 animals
+            const positions = shuffleArray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]).slice(0, 4);
+            positions.forEach((pos, idx) => {
+                cells[pos] = { type: 'animal', ...options[idx] };
+            });
+
+            // Render grid
+            const grid = document.getElementById('forestGrid');
+            grid.innerHTML = '';
+
+            cells.forEach((cell) => {
+                const cellDiv = document.createElement('div');
+                cellDiv.className = `grid-cell ${cell.type}`;
+
+                if (cell.type === 'tree') {
+                    cellDiv.textContent = '🌲';
+                } else {
+                    cellDiv.innerHTML = `
+                        <div class="animal-content">
+                            <span class="animal-emoji">${cell.animal}</span>
+                            <span class="animal-number">${cell.answer}</span>
+                        </div>
+                    `;
+                    cellDiv.addEventListener('click', () => handleAnswer(cell));
+                }
+
+                grid.appendChild(cellDiv);
+            });
+        }
+
+        // Handle answer selection
+        function handleAnswer(cell) {
+            // Stop the timer immediately
+            stopTimer();
+
+            const overlay = document.getElementById('feedbackOverlay');
+            const card = document.getElementById('feedbackCard');
+            const emoji = document.getElementById('feedbackEmoji');
+            const title = document.getElementById('feedbackTitle');
+            const message = document.getElementById('feedbackMessage');
+            const coinsDiv = document.getElementById('coinsEarned');
+
+            if (cell.isCorrect) {
+                // Calculate coins based on remaining time
+                const earnedCoins = calculateCoins();
+                gameState.correctAnswers++;
+                gameState.coins += earnedCoins;
+
+                card.className = 'feedback-card success';
+                emoji.textContent = '🎉';
+                title.textContent = '✨ 答對了！✨';
+                message.innerHTML = `( ${cell.animal}${cell.answer} ) 很高興被你找到了！<br>⏱️ 剩餘 ${gameState.timeRemaining.toFixed(1)} 秒`;
+                coinsDiv.textContent = `💰 金幣 +${earnedCoins}`;
+
+                createConfetti();
+            } else {
+                // Wrong answer
+                card.className = 'feedback-card error';
+                emoji.textContent = '🍃';
+                title.textContent = '哎呀！';
+                message.innerHTML = `那是躲在樹後的石頭...<br>正確答案是 <strong>${gameState.currentAnswer}</strong> 哦！<br>( ${gameState.currentAnimal}${gameState.currentAnswer} ) 才是正確的小動物！`;
+                coinsDiv.textContent = '';
+            }
+
+            updateScoreBoard();
+            overlay.classList.add('active');
+        }
+
+        // Update score board
+        function updateScoreBoard() {
+            document.getElementById('roundDisplay').textContent = `${gameState.currentRound} / ${gameState.totalRounds}`;
+            document.getElementById('correctDisplay').textContent = gameState.correctAnswers;
+            document.getElementById('coinsDisplay').textContent = gameState.coins;
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da'];
+            const shapes = ['■', '●', '▲', '★'];
+
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 50);
+            }
+        }
+
+        // Next round
+        function nextRound() {
+            document.getElementById('feedbackOverlay').classList.remove('active');
+
+            if (gameState.currentRound >= gameState.totalRounds) {
+                // Game over
+                showGameOver();
+            } else {
+                gameState.currentRound++;
+                updateScoreBoard();
+                generateGrid();
+            }
+        }
+
+        // Show game over
+        function showGameOver() {
+            stopTimer();
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('gameOverScreen').classList.add('active');
+            document.getElementById('playerNameDisplay').textContent = gameState.playerName;
+            document.getElementById('finalCorrect').textContent = gameState.correctAnswers;
+            document.getElementById('finalCoins').textContent = gameState.coins;
+
+            // Celebration confetti
+            for (let wave = 0; wave < 3; wave++) {
+                setTimeout(createConfetti, wave * 500);
+            }
+
+            // Save score and update leaderboard
+            saveScoreAndUpdateLeaderboard();
+        }
+
+        // Save score to leaderboard
+        function saveScoreAndUpdateLeaderboard() {
+            const todayKey = getTodayKey();
+            const newEntry = {
+                name: gameState.playerName,
+                coins: gameState.coins,
+                correct: gameState.correctAnswers,
+                difficulty: gameState.difficulty,
+                dateKey: todayKey,
+                time: Date.now()
+            };
+
+            // Show loading state
+            const content = document.getElementById('leaderboardContent');
+            if (content) {
+                content.innerHTML = '<div class="leaderboard-loading"><span class="spinner"></span>儲存成績中...</div>';
+            }
+
+            // Save to server (shared with all users)
+            saveScoreToServer(newEntry);
+        }
+
+        // Render leaderboard (updates both welcome screen and game over screen)
+        function renderLeaderboard(highlightCurrent = false) {
+            const todayKey = getTodayKey();
+
+            // Filter only today's entries
+            const todayEntries = leaderboardData.filter(entry => entry.dateKey === todayKey);
+
+            // Generate HTML for leaderboard
+            function generateLeaderboardHtml(showCurrentHighlight) {
+                if (todayEntries.length === 0) {
+                    return '<div class="leaderboard-empty">還沒有人上榜，成為今日第一名吧！🎉</div>';
+                }
+
+                // Take top 10 for display
+                const displayEntries = todayEntries.slice(0, 10);
+
+                let html = '<ul class="leaderboard-list">';
+
+                // Find current player's entry for highlighting
+                let currentPlayerFound = false;
+
+                displayEntries.forEach((entry, index) => {
+                    const rank = index + 1;
+                    let rankClass = '';
+                    let rankDisplay = rank;
+
+                    if (rank === 1) {
+                        rankDisplay = '🥇';
+                        rankClass = 'gold';
+                    } else if (rank === 2) {
+                        rankDisplay = '🥈';
+                        rankClass = 'silver';
+                    } else if (rank === 3) {
+                        rankDisplay = '🥉';
+                        rankClass = 'bronze';
+                    }
+
+                    // Check if this is the current player's latest entry
+                    const isCurrentPlayer = showCurrentHighlight &&
+                                             !currentPlayerFound &&
+                                             entry.name === gameState.playerName &&
+                                             entry.coins === gameState.coins &&
+                                             entry.correct === gameState.correctAnswers;
+
+                    if (isCurrentPlayer) {
+                        currentPlayerFound = true;
+                    }
+
+                    html += `
+                        <li class="leaderboard-item ${isCurrentPlayer ? 'current-player' : ''}">
+                            <span class="leaderboard-rank ${rankClass}">${rankDisplay}</span>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">${escapeHtml(entry.name || '匿名')}${isCurrentPlayer ? ' ⭐' : ''}</div>
+                                <div class="leaderboard-difficulty">${difficultyNames[entry.difficulty] || entry.difficulty}</div>
+                            </div>
+                            <div class="leaderboard-stats">
+                                <div class="leaderboard-coins">💰 ${entry.coins}</div>
+                                <div class="leaderboard-correct">答對 ${entry.correct} 題</div>
+                            </div>
+                        </li>
+                    `;
+                });
+
+                html += '</ul>';
+                return html;
+            }
+
+            // Update game over screen leaderboard (with current player highlight)
+            const gameOverContent = document.getElementById('leaderboardContent');
+            if (gameOverContent) {
+                gameOverContent.innerHTML = generateLeaderboardHtml(highlightCurrent);
+            }
+
+            // Update welcome screen leaderboard (without current player highlight)
+            const welcomeContent = document.getElementById('welcomeLeaderboardContent');
+            if (welcomeContent) {
+                welcomeContent.innerHTML = generateLeaderboardHtml(false);
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Show name input screen
+        function showNameScreen() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('nameScreen').classList.add('active');
+            document.getElementById('playerNameInput').value = gameState.playerName;
+            document.getElementById('playerNameInput').focus();
+        }
+
+        // Back to welcome from name screen
+        function backToWelcomeFromName() {
+            document.getElementById('nameScreen').classList.remove('active');
+            document.getElementById('nameError').classList.remove('show');
+            document.getElementById('welcomeScreen').style.display = 'block';
+        }
+
+        // Confirm name and proceed to difficulty
+        function confirmName() {
+            const nameInput = document.getElementById('playerNameInput');
+            const nameError = document.getElementById('nameError');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                nameError.classList.add('show');
+                nameInput.focus();
+                return;
+            }
+
+            nameError.classList.remove('show');
+            gameState.playerName = name;
+            showDifficultyScreen();
+        }
+
+        // Show difficulty selection
+        function showDifficultyScreen() {
+            document.getElementById('nameScreen').classList.remove('active');
+            document.getElementById('difficultyScreen').classList.add('active');
+        }
+
+        // Back to name screen from difficulty
+        function backToNameScreen() {
+            document.getElementById('difficultyScreen').classList.remove('active');
+            document.getElementById('nameScreen').classList.add('active');
+        }
+
+        // Difficulty names mapping
+        const difficultyNames = {
+            addSub: '100以內加減',
+            multiply2to9: '2~9乘法',
+            multiply0to10: '0~10乘法',
+            all: '全題目挑戰'
+        };
+
+        // Start game with selected difficulty
+        function startGame(difficulty) {
+            gameState.difficulty = difficulty;
+            gameState.currentRound = 1;
+            gameState.correctAnswers = 0;
+            gameState.coins = 0;
+
+            // Update difficulty badge
+            document.getElementById('difficultyBadge').textContent = difficultyNames[difficulty];
+
+            document.getElementById('difficultyScreen').classList.remove('active');
+            document.getElementById('gameOverScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+
+            updateScoreBoard();
+            generateGrid();
+        }
+
+        // Restart game - return to welcome screen
+        function restartGame() {
+            document.getElementById('gameOverScreen').classList.remove('active');
+            document.getElementById('welcomeScreen').style.display = 'block';
+            // Refresh leaderboard
+            fetchLeaderboard();
+        }
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', showNameScreen);
+        document.getElementById('backToWelcomeFromName').addEventListener('click', backToWelcomeFromName);
+        document.getElementById('confirmNameBtn').addEventListener('click', confirmName);
+        document.getElementById('backToWelcome').addEventListener('click', backToNameScreen);
+        document.getElementById('nextBtn').addEventListener('click', nextRound);
+        document.getElementById('restartBtn').addEventListener('click', restartGame);
+
+        // Name input - press Enter to confirm
+        document.getElementById('playerNameInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                confirmName();
+            }
+            // Clear error when typing
+            document.getElementById('nameError').classList.remove('show');
+        });
+
+        // Difficulty buttons
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                startGame(btn.dataset.difficulty);
+            });
+        });
+    </script>
+</body>
+</html>
+
+
